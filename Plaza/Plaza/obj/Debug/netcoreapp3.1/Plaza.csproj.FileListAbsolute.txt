@@ -1,0 +1,11 @@
+C:\Learning\Plaza\Plaza\Plaza\bin\Debug\netcoreapp3.1\Plaza.exe
+C:\Learning\Plaza\Plaza\Plaza\bin\Debug\netcoreapp3.1\Plaza.deps.json
+C:\Learning\Plaza\Plaza\Plaza\bin\Debug\netcoreapp3.1\Plaza.runtimeconfig.json
+C:\Learning\Plaza\Plaza\Plaza\bin\Debug\netcoreapp3.1\Plaza.runtimeconfig.dev.json
+C:\Learning\Plaza\Plaza\Plaza\bin\Debug\netcoreapp3.1\Plaza.dll
+C:\Learning\Plaza\Plaza\Plaza\bin\Debug\netcoreapp3.1\Plaza.pdb
+C:\Learning\Plaza\Plaza\Plaza\obj\Debug\netcoreapp3.1\Plaza.csprojAssemblyReference.cache
+C:\Learning\Plaza\Plaza\Plaza\obj\Debug\netcoreapp3.1\Plaza.AssemblyInfoInputs.cache
+C:\Learning\Plaza\Plaza\Plaza\obj\Debug\netcoreapp3.1\Plaza.AssemblyInfo.cs
+C:\Learning\Plaza\Plaza\Plaza\obj\Debug\netcoreapp3.1\Plaza.dll
+C:\Learning\Plaza\Plaza\Plaza\obj\Debug\netcoreapp3.1\Plaza.pdb

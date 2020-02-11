@@ -7,7 +7,7 @@ namespace packagecom.codecool.plaza.api
     class PlazaImpl : IPlaza
     {
         private List<IShop> _shops;
-        private bool _isopen = false;
+        private bool _isopen = true;
         private string _name;
         public PlazaImpl(string name)
         {
@@ -16,8 +16,11 @@ namespace packagecom.codecool.plaza.api
         }
         public List<IShop> GetShops()
         {
-            return _shops;
-            //throw PlazaIsClosedException();
+            if (_isopen)
+            {
+                return _shops;
+            }
+            throw new PlazaIsClosedException();
         }
         public string GetName()
         {
@@ -25,29 +28,65 @@ namespace packagecom.codecool.plaza.api
         }
         public void AddShop(IShop shop)
         {
-            _shops.Add(shop);
-            //throw ShopAlreadyExistsException();
-            //throw PlazaIsClosedException();
+            if (_isopen)
+            {
+                foreach (var bolt in _shops)
+                {
+                    if (bolt.GetName().Equals(shop.GetName()))
+                    {
+                        throw new ShopAlreadyExistsException();
+                    }
+                }
+                _shops.Add(shop);
+            }
+            else
+            {
+                throw new PlazaIsClosedException();
+            }
+
         }
         public void RemoveShop(IShop shop)
         {
-            _shops.Remove(shop);
-            //throw NoSuchShopException();
-            //throw PlazaIsClosedException();
+            if (_isopen)
+            {
+                var removed = false;
+                foreach (var bolt in _shops)
+                {
+                    if (bolt.GetName().Equals(shop.GetName()))
+                    {
+                        _shops.Remove(shop);
+                        removed = true;
+                        break;
+                    }
+                }
+                if (!removed)
+                {
+                    throw new NoSuchShopException();
+                }
+            }
+            else
+            {
+                throw new PlazaIsClosedException();
+            }
         }
 
         public IShop FindShopByName(string name)
         {
-            foreach (var shop in _shops)
+            if (_isopen)
             {
-                if (name == shop.GetName())
+                foreach (var shop in _shops)
                 {
-                    return shop;
+                    if (name == shop.GetName())
+                    {
+                        return shop;
+                    }
                 }
+                throw new NoSuchShopException();
             }
-            throw new Exception();
-            //throw NoSuchShopException();
-            //throw PlazaIsClosedException();
+            else
+            {
+                throw new PlazaIsClosedException();
+            }
         }
 
         public bool IsOpen()

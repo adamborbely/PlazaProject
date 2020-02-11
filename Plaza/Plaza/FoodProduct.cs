@@ -36,7 +36,7 @@ namespace packagecom.codecool.plaza.api
         }
         public override string ToString()
         {
-            return "ez kaja";
+            return name;
         }
     }
 }

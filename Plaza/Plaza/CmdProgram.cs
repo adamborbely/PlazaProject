@@ -8,8 +8,10 @@ namespace packagecom.codecool.plaza.cmdprog
 {
     class CmdProgram
     {
-        private List<Product> cart;
-        private List<float> prices;
+        private bool inAShop = false;
+        public List<Product> Cart { get; set; } = new List<Product>();
+        public List<float> Prices { get; set; } = new List<float>();
+
 
 
         public CmdProgram(string[] args)
@@ -18,6 +20,7 @@ namespace packagecom.codecool.plaza.cmdprog
 
         public void Run()
         {
+
             Console.WriteLine("There are no plaza created yet! Press \n1) to create a new plaza.\n2) to exit");
             var ans = Console.ReadLine();
             if (ans == "1")
@@ -54,7 +57,8 @@ namespace packagecom.codecool.plaza.cmdprog
                 $"5) to open the plaza\n" +
                 $"6) to close the plaza\n" +
                 $"7) to check if the plaza is open or not\n" +
-                $"8) leave plaza");
+                $"8) list items in the cart\n" +
+                $"9) leave plaza");
             return Console.ReadLine();
         }
         public void PlazaMenuLogic(IPlaza plaza, string option)
@@ -84,9 +88,13 @@ namespace packagecom.codecool.plaza.cmdprog
                     Console.WriteLine($"{shopToRemove} is not in our plaza anymore.");
                     break;
                 case "4":
+                    inAShop = true;
                     Console.WriteLine("Which shop you looking for?");
                     var shopToEnter = Console.ReadLine();
-                    ShopMenuLogic(plaza.FindShopByName(shopToEnter), ShopMenu(plaza.FindShopByName(shopToEnter)));
+                    while (inAShop)
+                    {
+                        ShopMenuLogic(plaza.FindShopByName(shopToEnter), ShopMenu(plaza.FindShopByName(shopToEnter)));
+                    }
                     break;
                 case "5":
                     Console.Clear();
@@ -108,6 +116,12 @@ namespace packagecom.codecool.plaza.cmdprog
                     }
                     break;
                 case "8":
+                    for (int i = 0; i < Cart.Count; i++)
+                    {
+                        Console.WriteLine($"Item: {Cart[i]} Price: {Prices[i]} HUF");
+                    }
+                    break;
+                case "9":
                     System.Environment.Exit(1);
                     break;
                 default:
@@ -138,14 +152,15 @@ namespace packagecom.codecool.plaza.cmdprog
                     Console.Clear();
                     foreach (var product in shop.GetProducts())
                     {
-                        Console.WriteLine(product.GetName());
+                        Console.WriteLine($"Barcode: {product.GetBarcode()} Product name: {product} Available ammount: {shop.GetQuantityOf(product.GetBarcode())} Price: {shop.GetPrice(product.GetBarcode())} HUF");
                     }
                     break;
                 case "2":
+                    Console.Clear();
                     Console.WriteLine("What product you are looking for?");
                     var productName = Console.ReadLine();
-                    Console.WriteLine(shop.FindByName(productName));
-                    Console.Clear();
+                    Product currentProduct = shop.FindByName(productName);
+                    Console.WriteLine($"Barcode: {currentProduct.GetBarcode()} Product name: {currentProduct} Available ammount: {shop.GetQuantityOf(currentProduct.GetBarcode())} Price: {shop.GetPrice(currentProduct.GetBarcode())} HUF");
                     break;
                 case "3":
                     Console.Clear();
@@ -177,10 +192,10 @@ namespace packagecom.codecool.plaza.cmdprog
                             var bestBefore = Console.ReadLine();
                             var productToAdd = new FoodProduct(Convert.ToInt64(barcode), name, manufact, Convert.ToInt32(calories), Convert.ToDateTime(bestBefore));
                             Console.WriteLine("How many you want to add?");
-                            var quant = Console.ReadLine();
+                            var FoodQuantity = Console.ReadLine();
                             Console.WriteLine("How much it costs?");
                             var price = Console.ReadLine();
-                            shop.AddNewProduct(productToAdd, Convert.ToInt32(quant), Convert.ToSingle(price));
+                            shop.AddNewProduct(productToAdd, Convert.ToInt32(FoodQuantity), Convert.ToSingle(price));
                             break;
                         case "2":
                             Console.WriteLine("Pls give the barcode of the product");
@@ -195,10 +210,10 @@ namespace packagecom.codecool.plaza.cmdprog
                             var type = Console.ReadLine();
                             var clothToAdd = new ClothingProduct(Convert.ToInt64(barcodec), namec, manufactc, material, type);
                             Console.WriteLine("How many you want to add?");
-                            var quanty = Console.ReadLine();
+                            var Clothesquanty = Console.ReadLine();
                             Console.WriteLine("How much it costs?");
                             var priceCloth = Console.ReadLine();
-                            shop.AddNewProduct(clothToAdd, Convert.ToInt32(quanty), Convert.ToSingle(priceCloth));
+                            shop.AddNewProduct(clothToAdd, Convert.ToInt32(Clothesquanty), Convert.ToSingle(priceCloth));
                             break;
                         default:
                             Console.WriteLine("Invalid input");
@@ -214,7 +229,42 @@ namespace packagecom.codecool.plaza.cmdprog
                     shop.AddProduct(Convert.ToInt64(barcodeToAdd), Convert.ToInt32(quantity));
                     break;
                 case "8":
-                    System.Environment.Exit(1);
+                    Console.WriteLine("Please enter the barcode of the product you want to buy");
+                    var barcodeToBuy = Convert.ToInt64(Console.ReadLine());
+                    Console.WriteLine("How many products you wanna buy?");
+                    var quant = Convert.ToInt32(Console.ReadLine());
+                    if (quant == 1)
+                    {
+                        Cart.Add(shop.BuyProduct(barcodeToBuy));
+                        Prices.Add(shop.GetPrice(barcodeToBuy));
+                    }
+                    else if (quant > 1)
+                    {
+                        Cart.AddRange(shop.BuyProducts(barcodeToBuy, quant));
+                        for (int i = 0; i < quant; i++)
+                        {
+                            Prices.Add(shop.GetPrice(barcodeToBuy));
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid input");
+                    }
+                    break;
+                case "9":
+                    Console.WriteLine("Please enter the barcode of the product you want to check");
+                    var barcodeToCheck = Convert.ToInt64(Console.ReadLine());
+                    if (shop.HasProduct(barcodeToCheck))
+                    {
+                        Console.WriteLine($"The price of {shop.GetProductName(barcodeToCheck)}: {shop.GetPrice(barcodeToCheck)} HUF");
+                    }
+                    else
+                    {
+                        Console.WriteLine("This product is not found in our store.");
+                    }
+                    break;
+                case "0":
+                    inAShop = false;
                     break;
                 default:
                     Console.WriteLine("Invalid input");

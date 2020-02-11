@@ -7,7 +7,7 @@ namespace packagecom.codecool.plaza.api
         private string _name;
         private string _owner;
         private Dictionary<long, ShopEntryImpl> products;
-        private bool _isopen = false;
+        private bool _isopen = true;
 
         public ShopImpl(string name, string owner)
         {
@@ -37,105 +37,200 @@ namespace packagecom.codecool.plaza.api
         {
             _isopen = false;
         }
+        public int GetQuantityOf(long barcode)
+        {
+            if (products.ContainsKey(barcode))
+            {
+                return products[barcode].GetQuantity();
+            }
+            else
+            {
+                throw new NoSuchProductException();
+            }
+        }
         public List<Product> GetProducts()
         {
-            var result = new List<Product>();
-            foreach (KeyValuePair<long, ShopEntryImpl> entry in products)
+            if (_isopen)
             {
-                result.Add(entry.Value.GetProduct());
+                var result = new List<Product>();
+                foreach (KeyValuePair<long, ShopEntryImpl> entry in products)
+                {
+                    result.Add(entry.Value.GetProduct());
+                }
+                return result;
             }
-            return result;
+            else
+            {
+                throw new ShopIsClosedException();
+            }
         }
         public Product FindByName(string name)
         {
-            foreach (KeyValuePair<long, ShopEntryImpl> entry in products)
+            if (_isopen)
             {
-                if (entry.Value.GetProduct().GetName().Equals(name))
+                foreach (KeyValuePair<long, ShopEntryImpl> entry in products)
                 {
-                    return entry.Value.GetProduct();
-                }
-            }
-            throw new System.NotImplementedException();
+                    if (entry.Value.GetProduct().GetName().Equals(name))
+                    {
 
-            //throw NoSuchProductException();
+                        return entry.Value.GetProduct();
+                    }
+                }
+                throw new NoSuchProductException();
+            }
+            else
+            {
+                throw new ShopIsClosedException();
+            }
         }
 
         public float GetPrice(long barcode)
         {
-            if (products.ContainsKey(barcode))
+            if (_isopen)
             {
-                return products[barcode].GetPrice();
-            }
-            throw new System.NotImplementedException();
-            //throw NoSuchProductException();
-        }
-        public bool HasProduct(long barcode)
-        {
-            if (products.ContainsKey(barcode))
-            {
-                return true;
-            }
-            return false;
-        }
-        public void AddNewProduct(Product product, int quantity, float price)
-        {
-            if (products.ContainsKey(product.GetBarcode()))
-            {
-                //throw ProductAlreadyExistsException();
+                if (products.ContainsKey(barcode))
+                {
+                    return products[barcode].GetPrice();
+                }
+                throw new NoSuchProductException();
             }
             else
             {
-                products.Add(product.GetBarcode(), new ShopEntryImpl(product, quantity, price));
+                throw new ShopIsClosedException();
+
+            }
+        }
+        public Product GetProductName(long barcode)
+        {
+            if (products.ContainsKey(barcode))
+            {
+                return products[barcode].GetProduct();
+            }
+            throw new NoSuchProductException();
+        }
+        public bool HasProduct(long barcode)
+        {
+            if (_isopen)
+            {
+                if (products.ContainsKey(barcode))
+                {
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                throw new ShopIsClosedException();
+            }
+        }
+        public void AddNewProduct(Product product, int quantity, float price)
+        {
+            if (_isopen)
+            {
+                if (products.ContainsKey(product.GetBarcode()))
+                {
+                    throw new ProductAlreadyExistsException();
+                }
+                else
+                {
+                    products.Add(product.GetBarcode(), new ShopEntryImpl(product, quantity, price));
+                }
+            }
+            else
+            {
+                throw new ShopIsClosedException();
             }
         }
 
         public void AddProduct(long barcode, int quantity)
         {
-            if (products.ContainsKey(barcode))
+            if (_isopen)
             {
-                products[barcode].IncreaseQuantity(quantity);
+                if (products.ContainsKey(barcode))
+                {
+                    products[barcode].IncreaseQuantity(quantity);
+                }
+                else
+                {
+                    throw new NoSuchProductException();
+                }
             }
             else
             {
-                //throw NoSuchProductException();
+                throw new ShopIsClosedException();
             }
         }
 
         public Product BuyProduct(long barcode)
         {
-            if (products.ContainsKey(barcode) && products[barcode].GetQuantity() > 0)
+            if (_isopen)
             {
-                products[barcode].SetQuantity(products[barcode].GetQuantity() - 1);
-                return products[barcode].GetProduct();
+                if (products.ContainsKey(barcode))
+                {
+                    if (products[barcode].GetQuantity() > 0)
+                    {
+                        products[barcode].SetQuantity(products[barcode].GetQuantity() - 1);
+                        return products[barcode].GetProduct();
+                    }
+                    else
+                    {
+                        throw new OutOfStockException();
+                    }
+                }
+                else
+                {
+                    throw new NoSuchProductException();
+                }
             }
-            throw new System.NotImplementedException();
-            //throw NoSuchProductException();
-            //OutOfStockException
+            else
+            {
+                throw new ShopIsClosedException();
+            }
         }
 
         public List<Product> BuyProducts(long barcode, int quantity)
         {
-            var result = new List<Product>();
-            if (products.ContainsKey(barcode) && products[barcode].GetQuantity() > quantity)
+            if (_isopen)
             {
-                products[barcode].DecreaseQuantity(quantity);
-                if (products[barcode].GetProduct() is FoodProduct)
+                var result = new List<Product>();
+                if (products.ContainsKey(barcode))
                 {
-                    for (int i = 0; i < quantity; i++)
+                    System.Console.WriteLine(products[barcode].GetQuantity());
+                    if (products[barcode].GetQuantity() >= quantity)
                     {
-                        result.Add(new FoodProduct(products[barcode].GetProduct() as FoodProduct));
+
+                        if (products[barcode].GetProduct() is FoodProduct)
+                        {
+                            products[barcode].DecreaseQuantity(quantity);
+                            for (int i = 0; i < quantity; i++)
+                            {
+                                result.Add(new FoodProduct(products[barcode].GetProduct() as FoodProduct));
+                            }
+                        }
+                        else if (products[barcode].GetProduct() is ClothingProduct)
+                        {
+                            products[barcode].DecreaseQuantity(quantity);
+                            for (int i = 0; i < quantity; i++)
+                            {
+                                result.Add(new ClothingProduct(products[barcode].GetProduct() as ClothingProduct));
+                            }
+                        }
+                        return result;
+                    }
+                    else
+                    {
+                        throw new OutOfStockException();
                     }
                 }
-                else if (products[barcode].GetProduct() is ClothingProduct)
+                else
                 {
-                    for (int i = 0; i < quantity; i++)
-                    {
-                        result.Add(new ClothingProduct(products[barcode].GetProduct() as ClothingProduct));
-                    }
+                    throw new NoSuchProductException();
                 }
-                return result;
             }
-            throw new System.NotImplementedException();
+            else
+            {
+                throw new ShopIsClosedException();
+            }
         }
 
         internal class ShopEntryImpl
@@ -184,7 +279,7 @@ namespace packagecom.codecool.plaza.api
             }
             public override string ToString()
             {
-                return "Don't sure yet";
+                return $"We have {GetQuantity()} pieces left";
             }
 
         }

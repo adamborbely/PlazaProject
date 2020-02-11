@@ -28,7 +28,7 @@ namespace packagecom.codecool.plaza.api
         }
         public override string ToString()
         {
-            return "ruha";
+            return $"{name}";
         }
     }
 }

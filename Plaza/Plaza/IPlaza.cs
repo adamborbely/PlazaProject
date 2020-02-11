@@ -22,5 +22,6 @@ namespace packagecom.codecool.plaza.api
         public void Open();
         public void Close();
         public string ToString();
+        public string GetName();
     }
 }

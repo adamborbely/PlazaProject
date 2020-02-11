@@ -8,14 +8,20 @@ namespace packagecom.codecool.plaza.api
     {
         private List<IShop> _shops;
         private bool _isopen = false;
-        public PlazaImpl()
+        private string _name;
+        public PlazaImpl(string name)
         {
+            this._name = name;
             _shops = new List<IShop>();
         }
         public List<IShop> GetShops()
         {
             return _shops;
             //throw PlazaIsClosedException();
+        }
+        public string GetName()
+        {
+            return _name;
         }
         public void AddShop(IShop shop)
         {
@@ -57,6 +63,9 @@ namespace packagecom.codecool.plaza.api
         {
             _isopen = false;
         }
-
+        public override string ToString()
+        {
+            return "fcku";
+        }
     }
 }

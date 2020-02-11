@@ -8,7 +8,7 @@ namespace packagecom.codecool.plaza.api
     {
         private string material;
         private string type;
-        private ClothingProduct(long barcode, string name, string manufacturer, string material, string type) : base(barcode, name, manufacturer)
+        public ClothingProduct(long barcode, string name, string manufacturer, string material, string type) : base(barcode, name, manufacturer)
         {
             this.material = material;
             this.type = type;

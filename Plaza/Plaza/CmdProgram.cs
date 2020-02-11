@@ -100,7 +100,10 @@ namespace packagecom.codecool.plaza.cmdprog
                     {
                         Console.WriteLine("Open the plaza first!"); ;
                     }
-
+                    catch (ShopAlreadyExistsException)
+                    {
+                        Console.WriteLine("This shop already exists!"); ;
+                    }
                     break;
                 case "3":
                     Console.Clear();
@@ -162,16 +165,23 @@ namespace packagecom.codecool.plaza.cmdprog
                     break;
                 case "8":
                     Console.Clear();
-                    if (Cart.Count > 0)
+                    if (plaza.IsOpen())
                     {
-                        for (int i = 0; i < Cart.Count; i++)
+                        if (Cart.Count > 0)
                         {
-                            Console.WriteLine($"Item: {Cart[i]} Price: {Prices[i]} HUF");
+                            for (int i = 0; i < Cart.Count; i++)
+                            {
+                                Console.WriteLine($"Item: {Cart[i]} Price: {Prices[i]} HUF");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("There is nothing in the cart yet");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("There is nothing in the cart yet");
+                        Console.WriteLine("Open the plaza first!");
                     }
                     break;
                 case "9":
@@ -205,16 +215,24 @@ namespace packagecom.codecool.plaza.cmdprog
             {
                 case "1":
                     Console.Clear();
-                    if (shop.GetProducts().Count > 0)
+                    try
                     {
-                        foreach (var product in shop.GetProducts())
+                        if (shop.GetProducts().Count > 0)
                         {
-                            Console.WriteLine($"Barcode: {product.GetBarcode()} Product name: {product} Available ammount: {shop.GetQuantityOf(product.GetBarcode())} Price: {shop.GetPrice(product.GetBarcode())} HUF");
+                            foreach (var product in shop.GetProducts())
+                            {
+                                Console.WriteLine($"Barcode: {product.GetBarcode()} Product name: {product} Available ammount: {shop.GetQuantityOf(product.GetBarcode())} Price: {shop.GetPrice(product.GetBarcode())} HUF");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("There are not products yet!");
                         }
                     }
-                    else
+                    catch (ShopIsClosedException)
                     {
-                        Console.WriteLine("There are not products yet!");
+
+                        Console.WriteLine("Please open the shop first!");
                     }
                     break;
                 case "2":
@@ -249,6 +267,7 @@ namespace packagecom.codecool.plaza.cmdprog
                     shop.Close();
                     break;
                 case "6":
+                    Console.Clear();
                     try
                     {
                         Console.WriteLine("Press 1 if you want to add food, 2 for adding clothes");
@@ -310,6 +329,7 @@ namespace packagecom.codecool.plaza.cmdprog
                     }
                     break;
                 case "7":
+                    Console.Clear();
                     try
                     {
                         Console.Clear();
@@ -333,6 +353,7 @@ namespace packagecom.codecool.plaza.cmdprog
                     }
                     break;
                 case "8":
+                    Console.Clear();
                     try
                     {
                         Console.WriteLine("Please enter the barcode of the product you want to buy");
@@ -375,6 +396,7 @@ namespace packagecom.codecool.plaza.cmdprog
                     }
                     break;
                 case "9":
+                    Console.Clear();
                     try
                     {
                         Console.WriteLine("Please enter the barcode of the product you want to check");

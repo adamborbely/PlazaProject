@@ -104,7 +104,7 @@ namespace packagecom.codecool.plaza.api
         }
         public override string ToString()
         {
-            return "fcku";
+            return _name;
         }
     }
 }

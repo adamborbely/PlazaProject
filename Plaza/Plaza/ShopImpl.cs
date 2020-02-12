@@ -199,22 +199,12 @@ namespace packagecom.codecool.plaza.api
                     if (products[barcode].GetQuantity() >= quantity)
                     {
 
-                        if (products[barcode].GetProduct() is FoodProduct)
+                        products[barcode].DecreaseQuantity(quantity);
+                        for (int i = 0; i < quantity; i++)
                         {
-                            products[barcode].DecreaseQuantity(quantity);
-                            for (int i = 0; i < quantity; i++)
-                            {
-                                result.Add(new FoodProduct(products[barcode].GetProduct() as FoodProduct));
-                            }
+                            result.Add(products[barcode].GetProduct());
                         }
-                        else if (products[barcode].GetProduct() is ClothingProduct)
-                        {
-                            products[barcode].DecreaseQuantity(quantity);
-                            for (int i = 0; i < quantity; i++)
-                            {
-                                result.Add(new ClothingProduct(products[barcode].GetProduct() as ClothingProduct));
-                            }
-                        }
+
                         return result;
                     }
                     else
